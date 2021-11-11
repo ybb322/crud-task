@@ -7,7 +7,15 @@
         :items="apiData"
         :items-per-page="10"
         class="elevation-1"
-    ></v-data-table>
+    >
+      <template v-slot:[`item.actions`]="{item}">
+      <v-icon
+        small
+        @click="deleteItem(item)"
+      >
+        mdi-delete
+      </v-icon>
+    </template></v-data-table>
     </v-col>
   </v-row>
 </template>
@@ -44,33 +52,33 @@ export default {
                 value:'address.street'
                 },
                 {
-                text: 'Zipcode',
-                value:'address.zipcode'
-                },
-                {
                 text: 'Suite',
                 value:'address.suite'
                 },
                 {
-                text: 'Phone',
-                value:'phone'
-                },
+                text:'Actions',
+                value:'actions'
+                }
         ],
         apiData: [],
         }
     },
     mounted() {
-    const vm = this;
     axios
-    .get('http://jsonplaceholder.typicode.com/users')
+    .get('https://jsonplaceholder.typicode.com/users')
     .then(response => (this.apiData = response.data))
-    .then(function (assign){
-        console.log(vm.apiData)
-    })
   },
   methods: {
-    consoleLog () {
-        console.log (this.apiData)
+    deleteItem (item) {
+      axios
+      .delete(`https://jsonplaceholder.typicode.com/users/${item.id}`)
+      .then(response => {
+        console.log(response)
+        if (response.status == 200) {
+          this.apiData.splice(this.apiData.indexOf(item),1)
+          console.log (`Item ${item.id} was deleted from the remote storage!`)
+        }
+      })
     }
   },
 }
