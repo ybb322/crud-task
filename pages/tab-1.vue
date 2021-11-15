@@ -9,6 +9,13 @@
         class="elevation-1"
     >
       <template v-slot:[`item.actions`]="{item}">
+        <v-icon
+        small
+        class="mr-2"
+        @click="editItem(item)"
+      >
+        mdi-pencil
+      </v-icon>
       <v-icon
         small
         @click="deleteItem(item)"
@@ -17,6 +24,19 @@
       </v-icon>
     </template></v-data-table>
     </v-col>
+  <v-dialog v-model="editDialog" width="500" class="edit-dialog">
+    <v-card>
+      <v-card-title>Edit item</v-card-title>
+      <v-text-field label="ID" v-model="editedItem.id"></v-text-field>
+      <v-text-field label="Name" v-model="editedItem.name"></v-text-field>
+      <v-text-field label="Username" v-model="editedItem.username"></v-text-field>
+      <v-text-field label="Email" v-model="editedItem.email"></v-text-field>
+      <v-text-field label="City" v-model="editedItem.address.city"></v-text-field>
+      <v-text-field label="Street" v-model="editedItem.address.street"></v-text-field>
+      <v-text-field label="Suite" v-model="editedItem.address.suite"></v-text-field>
+    </v-card>
+    <v-btn class="primary" @click="saveChanges">Save</v-btn>
+  </v-dialog>
   </v-row>
 </template>
 
@@ -56,17 +76,35 @@ export default {
                 value:'address.suite'
                 },
                 {
+                text: 'Phone',
+                value:'phone'
+                },
+                {
                 text:'Actions',
                 value:'actions'
                 }
         ],
         apiData: [],
+        editDialog: false,
+        editedItem: {
+          id: '',
+          name: '',
+          username:'',
+          email:'',
+          address: {
+            city: '',
+            street:'',
+            suite:'',
+          },
+        },
         }
     },
     mounted() {
     axios
     .get('https://jsonplaceholder.typicode.com/users')
     .then(response => (this.apiData = response.data))
+    .then (() => {
+    })
   },
   methods: {
     deleteItem (item) {
@@ -79,7 +117,33 @@ export default {
           console.log (`Item ${item.id} was deleted from the remote storage!`)
         }
       })
+    },
+    editItem (item) {
+      this.editedIndex = this.apiData.indexOf(item)
+      this.editedItem.id = item.id
+      this.editedItem.name = item.name;
+      this.editedItem.username = item.username;
+      this.editedItem.email = item.email;
+      this.editedItem.address.city = item.address.city
+      this.editedItem.address.street = item.address.street
+      this.editedItem.address.suite = item.address.suite
+      this.editDialog = true
+    },
+    saveChanges () {
+      this.apiData[this.editedIndex].id = this.editedItem.id
+      this.apiData[this.editedIndex].name = this.editedItem.name
+      this.apiData[this.editedIndex].username = this.editedItem.username
+      this.apiData[this.editedIndex].email = this.editedItem.email
+      this.apiData[this.editedIndex].address.city = this.editedItem.address.city
+      this.apiData[this.editedIndex].address.street = this.editedItem.address.street
+      this.apiData[this.editedIndex].address.suite = this.editedItem.address.suite
+      this.editDialog = false;
     }
   },
 }
 </script>
+
+
+<style>
+
+</style>
