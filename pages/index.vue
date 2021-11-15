@@ -1,5 +1,7 @@
 <template>
-  <div id="root">
-    <h2>hi</h2>
-  </div>
+  <v-row justify="center" align="center">
+    <v-col cols="12" sm="8" md="6">
+      <h1>index page</h1>
+    </v-col>
+  </v-row>
 </template>
