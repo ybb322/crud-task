@@ -76,6 +76,11 @@ export default {
                 value:'address.suite'
                 },
                 {
+
+                text: 'Phone',
+                value:'phone'
+                },
+                {
                 text:'Actions',
                 value:'actions'
                 }
@@ -96,6 +101,7 @@ export default {
         }
     },
     mounted() {
+
     // Getting data from remote server
     const vm = this;
     axios
