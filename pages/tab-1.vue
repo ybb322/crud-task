@@ -141,7 +141,7 @@ export default {
       this.apiData[this.editedIndex].address.suite = this.editedItem.address.suite
       // Updating saved data on server
       axios
-      .patch(`http://jsonplaceholder.typicode.com/users/${this.apiData.indexOf(this.apiData[this.editedIndex + 1])}`, {
+      .patch(`https://jsonplaceholder.typicode.com/users/${this.apiData.indexOf(this.apiData[this.editedIndex + 1])}`, {
         body: {
           id: `${this.editedItem.id}`,
           name: `${this.editedItem.name}`,
