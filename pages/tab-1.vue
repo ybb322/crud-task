@@ -108,7 +108,7 @@
         </v-card>
       </v-dialog>
     </v-row>
-
+    <v-btn class="primary" @click="fetchData">Fetch data with api.js</v-btn>
   </v-container>
 </template>
 
@@ -191,13 +191,10 @@ export default {
       },
     };
   },
-  mounted() {
+  async fetch() {
     // Getting data from remote server
-    const vm = this;
-    axios
-      .get("https://jsonplaceholder.typicode.com/users")
-      .then((response) => (this.apiData = response.data))
-      .then(() => {});
+  await this.$api.find()
+  this.apiData = this.$api.responseData
   },
   methods: {
     deleteItem(item) {
@@ -205,7 +202,6 @@ export default {
       axios
         .delete(`https://jsonplaceholder.typicode.com/users/${item.id}`)
         .then((response) => {
-          console.log(response);
           if (response.status == 200) {
             // If successful => deleting data locally
             this.apiData.splice(this.apiData.indexOf(item), 1);
@@ -271,6 +267,8 @@ export default {
       this.newItemDialog = false;
       this.newItem = Object.assign({}, this.defaultItem);
     },
+    fetchData () {
+    }
   },
 };
 </script>
