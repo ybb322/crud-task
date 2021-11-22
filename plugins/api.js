@@ -1,9 +1,16 @@
 export default ({$axios}, inject) => {
     inject ('api', {
-        responseData:{},
+        users: {
         async find () {
             const response = await $axios.get ('https://jsonplaceholder.typicode.com/users')
-            this.responseData = response.data
-        }
+            return response.data
+        },
+        async findOne (id) {
+            const response = await $axios.get (`https://jsonplaceholder.typicode.com/users/${id}`)
+            console.log(response.data)
+            return response.data
+        },
+
+        },
     })
 }

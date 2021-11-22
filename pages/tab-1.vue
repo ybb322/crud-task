@@ -1,13 +1,33 @@
 <template>
   <v-container class="wrapper">
-    <v-row justify="center" align="center">
-      <v-col cols="12" sm="12" md="12">
-        <h1 class="mb-5">{{ usersTabTitle }}</h1>
-        <v-row justify="start" no-gutters>
-          <v-col cols="4" sm="2" md="1">
-            <v-btn block class="blue-grey darken-2 mb-5" @click="createItem"
-              >New item</v-btn
+    <v-row
+      justify="center"
+      align="center"
+    >
+      <v-col
+        cols="12"
+        sm="12"
+        md="12"
+      >
+        <h1 class="mb-5">
+          {{ usersTabTitle }}
+        </h1>
+        <v-row
+          justify="start"
+          no-gutters
+        >
+          <v-col
+            cols="4"
+            sm="2"
+            md="1"
+          >
+            <v-btn
+              block
+              class="blue-grey darken-2 mb-5"
+              @click="createItem"
             >
+              New item
+            </v-btn>
           </v-col>
         </v-row>
         <v-data-table
@@ -16,187 +36,248 @@
           :items-per-page="-1"
           class="elevation-1"
         >
-          <template v-slot:[`item.actions`]="{ item }">
-            <v-icon small class="mr-2" @click="editItem(item)">
+          <template #[`item.actions`]="{ item }">
+              <v-icon
+              small
+              class="mr-2"
+              @click="getOneItem(item)"
+            >
+              mdi-account
+            </v-icon>
+            <v-icon
+              small
+              class="mr-2"
+              @click="editItem(item)"
+            >
               mdi-pencil
             </v-icon>
-            <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
-          </template></v-data-table
-        >
+            <v-icon
+              small
+              @click="deleteItem(item)"
+            >
+              mdi-delete
+            </v-icon>
+          </template>
+        </v-data-table>
       </v-col>
-      <v-dialog v-model="editDialog" width="400" class="edit-dialog">
-        <v-card max-width="400" class="edit-dialog-card dialog-card">
+      <v-dialog
+        v-model="editDialog"
+        width="400"
+        class="edit-dialog"
+      >
+        <v-card
+          max-width="400"
+          class="edit-dialog-card dialog-card"
+        >
           <v-row justify="center">
-            <v-card-title class="mt-3">Edit item</v-card-title>
+            <v-card-title class="mt-3">
+              Edit item
+            </v-card-title>
             <v-col cols="10">
               <v-text-field
+                v-model="editedItem.id"
                 class="shrink"
                 label="ID"
-                v-model="editedItem.id"
-              ></v-text-field>
+              />
               <v-text-field
-                label="Name"
                 v-model="editedItem.name"
-              ></v-text-field>
+                label="Name"
+              />
               <v-text-field
-                label="Username"
                 v-model="editedItem.username"
-              ></v-text-field>
+                label="Username"
+              />
               <v-text-field
-                label="Email"
                 v-model="editedItem.email"
-              ></v-text-field>
+                label="Email"
+              />
               <v-text-field
-                label="City"
                 v-model="editedItem.address.city"
-              ></v-text-field>
+                label="City"
+              />
               <v-text-field
-                label="Street"
                 v-model="editedItem.address.street"
-              ></v-text-field>
+                label="Street"
+              />
               <v-text-field
-                label="Suite"
                 v-model="editedItem.address.suite"
-              ></v-text-field>
-              <v-row justify="center" class="mb-3">
-                <v-col cols="4">
-                  <v-btn block color="blue-grey darken-4" @click="saveChanges"
-                    >Save</v-btn
-                  >
-                </v-col></v-row
+                label="Suite"
+              />
+              <v-row
+                justify="center"
+                class="mb-3"
               >
-            </v-col></v-row
-          >
+                <v-col cols="4">
+                  <v-btn
+                    block
+                    color="blue-grey darken-4"
+                    @click="saveChanges"
+                  >
+                    Save
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
         </v-card>
       </v-dialog>
-      <v-dialog v-model="newItemDialog" width="400">
-        <v-card max-width="400" class="dialog-card">
+      <v-dialog
+        v-model="newItemDialog"
+        width="400"
+      >
+        <v-card
+          max-width="400"
+          class="dialog-card"
+        >
           <v-row justify="center">
-            <v-card-title class="mt-3">New item</v-card-title>
+            <v-card-title class="mt-3">
+              New item
+            </v-card-title>
             <v-col cols="10">
-              <v-text-field label="ID" v-model="newItem.id"></v-text-field>
-              <v-text-field label="Name" v-model="newItem.name"></v-text-field>
               <v-text-field
-                label="Username"
+                v-model="newItem.id"
+                label="ID"
+              />
+              <v-text-field
+                v-model="newItem.name"
+                label="Name"
+              />
+              <v-text-field
                 v-model="newItem.username"
-              ></v-text-field>
+                label="Username"
+              />
               <v-text-field
-                label="Email"
                 v-model="newItem.email"
-              ></v-text-field>
+                label="Email"
+              />
               <v-text-field
-                label="City"
                 v-model="newItem.address.city"
-              ></v-text-field>
+                label="City"
+              />
               <v-text-field
-                label="Street"
                 v-model="newItem.address.street"
-              ></v-text-field>
+                label="Street"
+              />
               <v-text-field
-                label="Suite"
                 v-model="newItem.address.suite"
-              ></v-text-field>
-              <v-row justify="center" class="mb-3">
-                <v-col cols="4">
-                  <v-btn block color="blue-grey darken-4" @click="saveNewItem"
-                    >Save</v-btn
-                  >
-                </v-col></v-row
+                label="Suite"
+              />
+              <v-row
+                justify="center"
+                class="mb-3"
               >
-            </v-col></v-row
-          >
+                <v-col cols="4">
+                  <v-btn
+                    block
+                    color="blue-grey darken-4"
+                    @click="saveNewItem"
+                  >
+                    Save
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
         </v-card>
       </v-dialog>
     </v-row>
-    <v-btn class="primary" @click="fetchData">Fetch data with api.js</v-btn>
+    <v-btn
+      class="primary"
+      @click="fetchData"
+    >
+      Fetch data with api.js
+    </v-btn>
   </v-container>
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios';
 
 export default {
   data() {
     return {
       headers: [
         {
-          text: "ID",
-          value: "id",
+          text: 'ID',
+          value: 'id',
         },
         {
-          text: "Name",
-          value: "name",
+          text: 'Name',
+          value: 'name',
         },
         {
-          text: "Username",
-          value: "username",
+          text: 'Username',
+          value: 'username',
         },
         {
-          text: "Email",
-          value: "email",
+          text: 'Email',
+          value: 'email',
         },
         {
-          text: "City",
-          value: "address.city",
+          text: 'City',
+          value: 'address.city',
         },
         {
-          text: "Street",
-          value: "address.street",
+          text: 'Street',
+          value: 'address.street',
         },
         {
-          text: "Suite",
-          value: "address.suite",
+          text: 'Suite',
+          value: 'address.suite',
         },
         {
-          text: "Actions",
-          value: "actions",
+          text: 'Actions',
+          value: 'actions',
         },
       ],
-      usersTabTitle: "Users data",
+      usersTabTitle: 'Users data',
+      id:null,
       apiData: [],
       newItemDialog: false,
       editDialog: false,
       editedItem: {
-        id: "",
-        name: "",
-        username: "",
-        email: "",
+        id: '',
+        name: '',
+        username: '',
+        email: '',
         address: {
-          city: "",
-          street: "",
-          suite: "",
+          city: '',
+          street: '',
+          suite: '',
         },
       },
       newItem: {
-        id: "",
-        name: "",
-        username: "",
-        email: "",
+        id: '',
+        name: '',
+        username: '',
+        email: '',
         address: {
-          city: "",
-          street: "",
-          suite: "",
+          city: '',
+          street: '',
+          suite: '',
         },
       },
       defaultItem: {
-        id: "",
-        name: "",
-        username: "",
-        email: "",
+        id: '',
+        name: '',
+        username: '',
+        email: '',
         address: {
-          city: "",
-          street: "",
-          suite: "",
+          city: '',
+          street: '',
+          suite: '',
         },
       },
     };
   },
   async fetch() {
     // Getting data from remote server
-  await this.$api.find()
-  this.apiData = this.$api.responseData
+    this.apiData = await this.$api.users.find();
   },
   methods: {
+    async getOneItem (item) {
+    await this.$api.users.findOne(item.id)
+    },
     deleteItem(item) {
       // Deleting data on server
       axios
@@ -227,17 +308,14 @@ export default {
       this.apiData[this.editedIndex].name = this.editedItem.name;
       this.apiData[this.editedIndex].username = this.editedItem.username;
       this.apiData[this.editedIndex].email = this.editedItem.email;
-      this.apiData[this.editedIndex].address.city =
-        this.editedItem.address.city;
-      this.apiData[this.editedIndex].address.street =
-        this.editedItem.address.street;
-      this.apiData[this.editedIndex].address.suite =
-        this.editedItem.address.suite;
+      this.apiData[this.editedIndex].address.city = this.editedItem.address.city;
+      this.apiData[this.editedIndex].address.street = this.editedItem.address.street;
+      this.apiData[this.editedIndex].address.suite = this.editedItem.address.suite;
       // Updating saved data on server
       axios
         .patch(
           `https://jsonplaceholder.typicode.com/users/${this.apiData.indexOf(
-            this.apiData[this.editedIndex + 1]
+            this.apiData[this.editedIndex + 1],
           )}`,
           {
             body: {
@@ -251,7 +329,7 @@ export default {
                 suite: `${this.editedItem.address.suite}`,
               },
             },
-          }
+          },
         )
         .then((response) => console.log(response));
       this.editDialog = false;
@@ -262,13 +340,13 @@ export default {
     saveNewItem() {
       this.apiData.push(this.newItem);
       axios
-        .post("https://jsonplaceholder.typicode.com/users", this.newItem)
+        .post('https://jsonplaceholder.typicode.com/users', this.newItem)
         .then((response) => console.log(response));
       this.newItemDialog = false;
-      this.newItem = Object.assign({}, this.defaultItem);
+      this.newItem = { ...this.defaultItem };
     },
-    fetchData () {
-    }
+    fetchData() {
+    },
   },
 };
 </script>
