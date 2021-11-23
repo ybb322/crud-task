@@ -15,9 +15,6 @@
     "vuetify": "^2.5.5"
   },
   "devDependencies": {
-    "@nuxtjs/vuetify": "^1.12.1",
-    "eslint": "^8.2.0",
-    "eslint-config-google": "^0.14.0",
-    "eslint-plugin-vue": "^8.0.3"
+    "@nuxtjs/vuetify": "^1.12.1"
   }
 }

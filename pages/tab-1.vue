@@ -108,7 +108,6 @@
         </v-card>
       </v-dialog>
     </v-row>
-
   </v-container>
 </template>
 
@@ -191,15 +190,14 @@ export default {
       },
     };
   },
-  mounted() {
+  async fetch() {
     // Getting data from remote server
-    const vm = this;
-    axios
-      .get("https://jsonplaceholder.typicode.com/users")
-      .then((response) => (this.apiData = response.data))
-      .then(() => {});
+    this.apiData = await this.$api.users.find();
   },
   methods: {
+    async getOneItem(item) {
+      await this.$api.users.findOne(item.id);
+    },
     deleteItem(item) {
       // Deleting data on server
       axios
@@ -216,46 +214,31 @@ export default {
     editItem(item) {
       // Editing data locally
       this.editedIndex = this.apiData.indexOf(item);
-      this.editedItem.id = item.id;
-      this.editedItem.name = item.name;
-      this.editedItem.username = item.username;
-      this.editedItem.email = item.email;
-      this.editedItem.address.city = item.address.city;
-      this.editedItem.address.street = item.address.street;
-      this.editedItem.address.suite = item.address.suite;
+      this.editedItem = JSON.parse(JSON.stringify(item));
       this.editDialog = true;
     },
     saveChanges() {
       // Saving edited data locally
-      this.apiData[this.editedIndex].id = this.editedItem.id;
-      this.apiData[this.editedIndex].name = this.editedItem.name;
-      this.apiData[this.editedIndex].username = this.editedItem.username;
-      this.apiData[this.editedIndex].email = this.editedItem.email;
-      this.apiData[this.editedIndex].address.city =
-        this.editedItem.address.city;
-      this.apiData[this.editedIndex].address.street =
-        this.editedItem.address.street;
-      this.apiData[this.editedIndex].address.suite =
-        this.editedItem.address.suite;
+      this.apiData[this.editedIndex] = JSON.parse(
+        JSON.stringify(this.editedItem)
+      );
+      //  this.apiData[this.editedIndex].id = this.editedItem.id;
+      //  this.apiData[this.editedIndex].name = this.editedItem.name;
+      //  this.apiData[this.editedIndex].username = this.editedItem.username;
+      //  this.apiData[this.editedIndex].email = this.editedItem.email;
+      //  this.apiData[this.editedIndex].address.city =
+      //    this.editedItem.address.city;
+      //  this.apiData[this.editedIndex].address.street =
+      //    this.editedItem.address.street;
+      //  this.apiData[this.editedIndex].address.suite =
+      //    this.editedItem.address.suite;
       // Updating saved data on server
       axios
         .patch(
           `https://jsonplaceholder.typicode.com/users/${this.apiData.indexOf(
             this.apiData[this.editedIndex + 1]
           )}`,
-          {
-            body: {
-              id: `${this.editedItem.id}`,
-              name: `${this.editedItem.name}`,
-              username: `${this.editedItem.username}`,
-              email: `${this.editedItem.id}`,
-              address: {
-                city: `${this.editedItem.address.city}`,
-                street: `${this.editedItem.address.street}`,
-                suite: `${this.editedItem.address.suite}`,
-              },
-            },
-          }
+          this.apiData[this.editedIndex]
         )
         .then((response) => console.log(response));
       this.editDialog = false;
