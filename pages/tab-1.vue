@@ -1,31 +1,13 @@
 <template>
   <v-container class="wrapper">
-    <v-row
-      justify="center"
-      align="center"
-    >
-      <v-col
-        cols="12"
-        sm="12"
-        md="12"
-      >
+    <v-row justify="center" align="center">
+      <v-col cols="12" sm="12" md="12">
         <h1 class="mb-5">
           {{ usersTabTitle }}
         </h1>
-        <v-row
-          justify="start"
-          no-gutters
-        >
-          <v-col
-            cols="4"
-            sm="2"
-            md="1"
-          >
-            <v-btn
-              block
-              class="blue-grey darken-2 mb-5"
-              @click="createItem"
-            >
+        <v-row justify="start" no-gutters>
+          <v-col cols="4" sm="2" md="1">
+            <v-btn block class="blue-grey darken-2 mb-5" @click="createItem">
               New item
             </v-btn>
           </v-col>
@@ -43,12 +25,7 @@
             <v-icon small class="mr-2" @click="editItem(item)">
               mdi-pencil
             </v-icon>
-            <v-icon
-              small
-              @click="deleteItem(item)"
-            >
-              mdi-delete
-            </v-icon>
+            <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
           </template>
         </v-data-table>
       </v-col>
@@ -57,31 +34,17 @@
           <v-row justify="center">
             <v-card-title class="mt-3">{{ itemDialogTitle }}</v-card-title>
             <v-col cols="10">
-              <v-text-field
-                label="Name"
-                v-model="editedItem.name"
-                label="Name"
-              />
-              <v-text-field
-                v-model="editedItem.username"
-                label="Username"
-              />
-              <v-text-field
-                v-model="editedItem.email"
-                label="Email"
-              />
-              <v-text-field
-                v-model="editedItem.address.city"
-                label="City"
-              />
+              <v-text-field label="Name" v-model="editedItem.name" />
+              <v-text-field v-model="editedItem.username" label="Username" />
+              <v-text-field v-model="editedItem.email" label="Email" />
+              <v-text-field v-model="editedItem.address.city" label="City" />
               <v-text-field
                 v-model="editedItem.address.street"
                 label="Street"
               />
-              <v-text-field
-                v-model="editedItem.address.suite"
-                label="Suite"
-              ></v-text-field>
+              <v-text-field v-model="editedItem.address.suite"
+              label="Suite">
+              </v-text-field>
               <v-row justify="center" class="mb-3">
                 <v-col cols="12">
                   <v-btn
@@ -98,8 +61,6 @@
                     @click="cancelChanges"
                     >Cancel</v-btn
                   >
-                    Save
-                  </v-btn>
                 </v-col>
               </v-row>
             </v-col>
@@ -119,75 +80,75 @@ export default {
     return {
       headers: [
         {
-          text: 'ID',
-          value: 'id',
+          text: "ID",
+          value: "id",
         },
         {
-          text: 'Name',
-          value: 'name',
+          text: "Name",
+          value: "name",
         },
         {
-          text: 'Username',
-          value: 'username',
+          text: "Username",
+          value: "username",
         },
         {
-          text: 'Email',
-          value: 'email',
+          text: "Email",
+          value: "email",
         },
         {
-          text: 'City',
-          value: 'address.city',
+          text: "City",
+          value: "address.city",
         },
         {
-          text: 'Street',
-          value: 'address.street',
+          text: "Street",
+          value: "address.street",
         },
         {
-          text: 'Suite',
-          value: 'address.suite',
+          text: "Suite",
+          value: "address.suite",
         },
         {
-          text: 'Actions',
-          value: 'actions',
+          text: "Actions",
+          value: "actions",
         },
       ],
-      usersTabTitle: 'Users data',
-      id:null,
+      usersTabTitle: "Users data",
+      id: null,
       apiData: [],
       editedIndex: -1,
       newItemDialog: false,
       itemDialog: false,
       editedItem: {
-        id: '',
-        name: '',
-        username: '',
-        email: '',
+        id: "",
+        name: "",
+        username: "",
+        email: "",
         address: {
-          city: '',
-          street: '',
-          suite: '',
+          city: "",
+          street: "",
+          suite: "",
         },
       },
       newItem: {
-        id: '',
-        name: '',
-        username: '',
-        email: '',
+        id: "",
+        name: "",
+        username: "",
+        email: "",
         address: {
-          city: '',
-          street: '',
-          suite: '',
+          city: "",
+          street: "",
+          suite: "",
         },
       },
       defaultItem: {
-        id: '',
-        name: '',
-        username: '',
-        email: '',
+        id: "",
+        name: "",
+        username: "",
+        email: "",
         address: {
-          city: '',
-          street: '',
-          suite: '',
+          city: "",
+          street: "",
+          suite: "",
         },
       },
     };
@@ -241,6 +202,9 @@ export default {
         let updatedItem = this.apiData[this.editedIndex];
         await this.$api.users.update(userId, updatedItem);
       } else {
+        if (this.editedItem.id == "") {
+          this.editedItem.id = this.apiData.length + 1;
+        }
         this.apiData.push(this.editedItem);
         let newItem = this.editedItem;
         await this.$api.users.create(newItem);
@@ -264,13 +228,12 @@ export default {
     saveNewItem() {
       this.apiData.push(this.newItem);
       axios
-        .post('https://jsonplaceholder.typicode.com/users', this.newItem)
+        .post("https://jsonplaceholder.typicode.com/users", this.newItem)
         .then((response) => console.log(response));
       this.newItemDialog = false;
       this.newItem = { ...this.defaultItem };
     },
-    fetchData() {
-    },
+    fetchData() {},
   },
 };
 </script>
