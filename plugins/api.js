@@ -11,7 +11,7 @@ export default ({ $axios }, inject) => {
         const response = await $axios.get(
           `https://jsonplaceholder.typicode.com/users/${id}`
         );
-        console.log(response.data);
+        console.log(response);
         return response.data;
       },
       async remove(id) {

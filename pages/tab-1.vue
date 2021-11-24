@@ -194,6 +194,9 @@ export default {
     },
     async deleteItem(item) {
       // Deleting data on server
+      if (this.apiData.indexOf(item) > 9) {
+        item.id = this.apiData.indexOf(item) + 1;
+      }
       await this.$api.users.remove(item.id);
       this.apiData.splice(this.apiData.indexOf(item), 1);
     },
@@ -218,7 +221,7 @@ export default {
     },
     cancelChanges() {
       this.itemDialog = false;
-      this.editedItem = Object.assign({}, this.defaultItem);
+      this.editedItem = JSON.parse(JSON.stringify(this.defaultItem));
       this.editedIndex = -1;
     },
     createItem() {
