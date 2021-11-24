@@ -90,7 +90,7 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
       clipped: false,
       drawer: false,
@@ -99,19 +99,19 @@ export default {
         {
           icon: 'mdi-apps',
           title: 'Index',
-          to: '/'
+          to: '/',
         },
         {
           icon: 'mdi-chart-bubble',
           title: 'Tab 1',
-          to: '/tab-1'
+          to: '/tab-1',
         },
       ],
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'Vuetify.js'
-    }
-  }
-}
+      title: 'Vuetify.js',
+    };
+  },
+};
 </script>
