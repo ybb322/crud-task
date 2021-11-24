@@ -212,6 +212,9 @@ export default {
         let updatedItem = this.apiData[this.editedIndex];
         await this.$api.users.update(userId, updatedItem);
       } else {
+        if (this.editedItem.id == "") {
+          this.editedItem.id = this.apiData.length + 1;
+        }
         this.apiData.push(this.editedItem);
         let newItem = this.editedItem;
         await this.$api.users.create(newItem);
