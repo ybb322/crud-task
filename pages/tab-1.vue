@@ -42,7 +42,9 @@
                 v-model="editedItem.address.street"
                 label="Street"
               />
-              <v-text-field v-model="editedItem.address.suite"></v-text-field>
+              <v-text-field v-model="editedItem.address.suite"
+              label="Suite">
+              </v-text-field>
               <v-row justify="center" class="mb-3">
                 <v-col cols="12">
                   <v-btn
