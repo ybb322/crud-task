@@ -2,19 +2,17 @@
   <v-container class="wrapper">
     <v-row justify="center" align="center">
       <v-col cols="12" sm="12" md="12">
-        <h1 class="mb-5">
-          {{ usersTabTitle }}
-        </h1>
+        <h1 class="mb-5">Users</h1>
         <v-row justify="start" no-gutters>
           <v-col cols="4" sm="2" md="1">
-            <v-btn block class="blue-grey darken-2 mb-5" @click="createItem">
+            <v-btn block class="blue-grey darken-2 mb-5" @click="showDialog()">
               New item
             </v-btn>
           </v-col>
         </v-row>
         <v-data-table
           :headers="headers"
-          :items="apiData"
+          :items="items"
           :items-per-page="-1"
           class="elevation-15"
         >
@@ -22,19 +20,26 @@
             <v-icon small class="mr-2" @click="getOneItem(item)">
               mdi-account
             </v-icon>
-            <v-icon small class="mr-2" @click="editItem(item)">
+            <v-icon small class="mr-2" @click="showDialog(item)">
               mdi-pencil
             </v-icon>
             <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
           </template>
         </v-data-table>
       </v-col>
-      <v-dialog v-model="itemDialog" width="400" class="item-dialog">
+      <v-dialog
+        @click:outside="cancelChanges"
+        v-model="isDialogOpen"
+        width="400"
+        class="item-dialog"
+      >
         <v-card max-width="400" class="edit-dialog-card dialog-card">
           <v-row justify="center">
-            <v-card-title class="mt-3">{{ itemDialogTitle }}</v-card-title>
+            <v-card-title class="mt-3">{{
+              this.editedIndex === -1 ? "New Item" : "Edit Item"
+            }}</v-card-title>
             <v-col cols="10">
-              <v-text-field label="Name" v-model="editedItem.name" />
+              <v-text-field v-model="editedItem.name" label="Name" />
               <v-text-field v-model="editedItem.username" label="Username" />
               <v-text-field v-model="editedItem.email" label="Email" />
               <v-text-field v-model="editedItem.address.city" label="City" />
@@ -42,8 +47,7 @@
                 v-model="editedItem.address.street"
                 label="Street"
               />
-              <v-text-field v-model="editedItem.address.suite"
-              label="Suite">
+              <v-text-field v-model="editedItem.address.suite" label="Suite">
               </v-text-field>
               <v-row justify="center" class="mb-3">
                 <v-col cols="12">
@@ -112,33 +116,11 @@ export default {
           value: "actions",
         },
       ],
-      usersTabTitle: "Users data",
-      id: null,
-      apiData: [],
+      items: [],
       editedIndex: -1,
-      newItemDialog: false,
-      itemDialog: false,
+      isDialogOpen: false,
       editedItem: {
-        id: "",
-        name: "",
-        username: "",
-        email: "",
-        address: {
-          city: "",
-          street: "",
-          suite: "",
-        },
-      },
-      newItem: {
-        id: "",
-        name: "",
-        username: "",
-        email: "",
-        address: {
-          city: "",
-          street: "",
-          suite: "",
-        },
+        address: {},
       },
       defaultItem: {
         id: "",
@@ -153,87 +135,69 @@ export default {
       },
     };
   },
-  watch: {
-    itemDialog(val) {
-      val || this.cancelChanges();
-    },
-  },
-  computed: {
-    itemDialogTitle() {
-      if (this.editedIndex === -1) {
-        return (this.itemDialogTitle = "New Item");
-      } else {
-        return (this.itemDialogTitle = "Edit Item");
-      }
-      //  return this.editedIndex === -1 ? "New Item" : "Edit Item";
-    },
-  },
   async fetch() {
     // Getting data from remote server
-    this.apiData = await this.$api.users.find();
+    this.items = await this.$api.users.find();
   },
   methods: {
+    //Getting one item from remote server
     async getOneItem(item) {
       await this.$api.users.findOne(item.id);
     },
-    editItem(item) {
-      // Editing data locally
-      this.editedIndex = this.apiData.indexOf(item);
-      this.editedItem = JSON.parse(JSON.stringify(item));
-      this.itemDialog = true;
+    //Show modal window for New Item / Edit Item
+    showDialog(item = null) {
+      this.editedIndex = this.items.indexOf(item);
+      //Check if item doesn't have any values
+      this.editedItem =
+        item == null
+          ? JSON.parse(JSON.stringify(this.defaultItem)) //If true == it's a new item == clear the inputs
+          : JSON.parse(JSON.stringify(item)); //If false == the item already exists == editing
+      this.isDialogOpen = true;
     },
     async deleteItem(item) {
-      // Deleting data on server
-      if (this.apiData.indexOf(item) > 9) {
-        item.id = this.apiData.indexOf(item) + 1;
+      //If it's a 'new' item (> 10th) == asign the a fake id for it
+      if (this.items.indexOf(item) > 9) {
+        item.id = this.items.indexOf(item) + 1;
       }
-      await this.$api.users.remove(item.id);
-      this.apiData.splice(this.apiData.indexOf(item), 1);
+      // Deleting the item on server, checking if it's deleted
+      (await this.$api.users.remove(item.id)) == 200
+        ? this.items.splice(this.items.indexOf(item), 1) // If true == delete it locally
+        : console.log("There's some problem with deleting on server!"); // If false == console.log the error message
     },
     async saveChanges() {
-      // Saving edited data locally
+      // Saving edited data on server
+      let userId;
+      // Check if the item already existed
       if (this.editedIndex > -1) {
-        Vue.set(
-          this.apiData,
-          this.editedIndex,
-          JSON.parse(JSON.stringify(this.editedItem))
-        );
-        let userId = this.apiData.indexOf(this.apiData[this.editedIndex + 1]);
-        let updatedItem = this.apiData[this.editedIndex];
-        await this.$api.users.update(userId, updatedItem);
-      } else {
-        if (this.editedItem.id == "") {
-          this.editedItem.id = this.apiData.length + 1;
-        }
-        this.apiData.push(this.editedItem);
-        let newItem = this.editedItem;
-        await this.$api.users.create(newItem);
+        //If true == Pass the index of the item as a parameter to store() in api.js
+        userId = this.items.indexOf(this.items[this.editedIndex + 1]);
+        //Updating the item on server, checking if it's updated
+        (await this.$api.users.store(userId, this.editedItem)) == 200
+          ? this.items.splice(
+              this.editedIndex,
+              1,
+              JSON.parse(JSON.stringify(this.editedItem)) // If true == update it locally
+            )
+          : console.log("There's some problem with editing on server!"); // If false == console.log the error message
       }
-      this.itemDialog = false;
+      //If the item didn't exist (=creating)
+      else {
+        userId = null; //Passing null userId as a parameter to store() in api.js
+        //Creating the item on server, checking if it's created
+        (await this.$api.users.store(userId, this.editedItem)) == 201
+          ? this.items.push(this.editedItem) // If true == create it locally
+          : console.log(
+              "There's some problem with creating the item on server!"
+            ); // If false == console.log the error message
+      }
+      this.isDialogOpen = false;
       this.editedIndex = -1;
     },
     cancelChanges() {
-      this.itemDialog = false;
+      this.isDialogOpen = false;
       this.editedItem = JSON.parse(JSON.stringify(this.defaultItem));
       this.editedIndex = -1;
     },
-    createItem() {
-      if (this.editedIndex == -1) {
-        this.itemDialogTitle = "New Item";
-      } else {
-        this.itemDialogTitle = "Edit Item";
-      }
-      this.itemDialog = true;
-    },
-    saveNewItem() {
-      this.apiData.push(this.newItem);
-      axios
-        .post("https://jsonplaceholder.typicode.com/users", this.newItem)
-        .then((response) => console.log(response));
-      this.newItemDialog = false;
-      this.newItem = { ...this.defaultItem };
-    },
-    fetchData() {},
   },
 };
 </script>
