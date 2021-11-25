@@ -11,29 +11,26 @@ export default ({ $axios }, inject) => {
         const response = await $axios.get(
           `https://jsonplaceholder.typicode.com/users/${id}`
         );
-        console.log(response);
         return response.data;
       },
       async remove(id) {
         const response = await $axios.delete(
           `https://jsonplaceholder.typicode.com/users/${id}`
         );
-        console.log(response);
+        return response.status;
       },
-      async update(userId, updatedItem) {
-        const response = await $axios.patch(
-          `https://jsonplaceholder.typicode.com/users/${userId}`,
-          updatedItem
-        );
-        console.log(response);
-        return response;
-      },
-      async create(newItem) {
-        const response = await $axios.post(
-          `https://jsonplaceholder.typicode.com/users`,
-          newItem
-        );
-        console.log(response);
+      async store(id = null, data) {
+        const response =
+          id == null
+            ? await $axios.post(
+                `https://jsonplaceholder.typicode.com/users`,
+                data
+              )
+            : await $axios.patch(
+                `https://jsonplaceholder.typicode.com/users/${id}`,
+                data
+              );
+        return response.status;
       },
     },
   });

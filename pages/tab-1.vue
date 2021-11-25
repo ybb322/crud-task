@@ -5,7 +5,7 @@
         <h1 class="mb-5">Users</h1>
         <v-row justify="start" no-gutters>
           <v-col cols="4" sm="2" md="1">
-            <v-btn block class="blue-grey darken-2 mb-5" @click="createItem()">
+            <v-btn block class="blue-grey darken-2 mb-5" @click="showDialog()">
               New item
             </v-btn>
           </v-col>
@@ -20,7 +20,7 @@
             <v-icon small class="mr-2" @click="getOneItem(item)">
               mdi-account
             </v-icon>
-            <v-icon small class="mr-2" @click="editItem(item)">
+            <v-icon small class="mr-2" @click="showDialog(item)">
               mdi-pencil
             </v-icon>
             <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
@@ -29,7 +29,7 @@
       </v-col>
       <v-dialog
         @click:outside="cancelChanges"
-        v-model="itemDialog"
+        v-model="isDialogOpen"
         width="400"
         class="item-dialog"
       >
@@ -39,7 +39,7 @@
               this.editedIndex === -1 ? "New Item" : "Edit Item"
             }}</v-card-title>
             <v-col cols="10">
-              <v-text-field label="Name" v-model="editedItem.name" />
+              <v-text-field v-model="editedItem.name" label="Name" />
               <v-text-field v-model="editedItem.username" label="Username" />
               <v-text-field v-model="editedItem.email" label="Email" />
               <v-text-field v-model="editedItem.address.city" label="City" />
@@ -118,28 +118,9 @@ export default {
       ],
       items: [],
       editedIndex: -1,
-      itemDialog: false,
+      isDialogOpen: false,
       editedItem: {
-        id: "",
-        name: "",
-        username: "",
-        email: "",
-        address: {
-          city: "",
-          street: "",
-          suite: "",
-        },
-      },
-      newItem: {
-        id: "",
-        name: "",
-        username: "",
-        email: "",
-        address: {
-          city: "",
-          street: "",
-          suite: "",
-        },
+        address: {},
       },
       defaultItem: {
         id: "",
@@ -159,52 +140,63 @@ export default {
     this.items = await this.$api.users.find();
   },
   methods: {
+    //Getting one item from remote server
     async getOneItem(item) {
       await this.$api.users.findOne(item.id);
     },
-    editItem(item) {
-      // Editing data locally
+    //Show modal window for New Item / Edit Item
+    showDialog(item = null) {
       this.editedIndex = this.items.indexOf(item);
-      this.editedItem = JSON.parse(JSON.stringify(item));
-      this.itemDialog = true;
+      //Check if item doesn't have any values
+      this.editedItem =
+        item == null
+          ? JSON.parse(JSON.stringify(this.defaultItem)) //If true == it's a new item == clear the inputs
+          : JSON.parse(JSON.stringify(item)); //If false == the item already exists == editing
+      this.isDialogOpen = true;
     },
     async deleteItem(item) {
-      // Deleting data on server
+      //If it's a 'new' item (> 10th) == asign the a fake id for it
       if (this.items.indexOf(item) > 9) {
         item.id = this.items.indexOf(item) + 1;
       }
-      await this.$api.users.remove(item.id);
-      this.items.splice(this.items.indexOf(item), 1);
+      // Deleting the item on server, checking if it's deleted
+      (await this.$api.users.remove(item.id)) == 200
+        ? this.items.splice(this.items.indexOf(item), 1) // If true == delete it locally
+        : console.log("There's some problem with deleting on server!"); // If false == console.log the error message
     },
     async saveChanges() {
-      // Saving edited data locally
+      // Saving edited data on server
+      let userId;
+      // Check if the item already existed
       if (this.editedIndex > -1) {
-        Vue.set(
-          this.items,
-          this.editedIndex,
-          JSON.parse(JSON.stringify(this.editedItem))
-        );
-        let userId = this.items.indexOf(this.items[this.editedIndex + 1]);
-        let updatedItem = this.items[this.editedIndex];
-        await this.$api.users.update(userId, updatedItem);
-      } else {
-        if (this.editedItem.id == "") {
-          this.editedItem.id = this.items.length + 1;
-        }
-        this.items.push(this.editedItem);
-        let newItem = this.editedItem;
-        await this.$api.users.create(newItem);
+        //If true == Pass the index of the item as a parameter to store() in api.js
+        userId = this.items.indexOf(this.items[this.editedIndex + 1]);
+        //Updating the item on server, checking if it's updated
+        (await this.$api.users.store(userId, this.editedItem)) == 200
+          ? this.items.splice(
+              this.editedIndex,
+              1,
+              JSON.parse(JSON.stringify(this.editedItem)) // If true == update it locally
+            )
+          : console.log("There's some problem with editing on server!"); // If false == console.log the error message
       }
-      this.itemDialog = false;
+      //If the item didn't exist (=creating)
+      else {
+        userId = null; //Passing null userId as a parameter to store() in api.js
+        //Creating the item on server, checking if it's created
+        (await this.$api.users.store(userId, this.editedItem)) == 201
+          ? this.items.push(this.editedItem) // If true == create it locally
+          : console.log(
+              "There's some problem with creating the item on server!"
+            ); // If false == console.log the error message
+      }
+      this.isDialogOpen = false;
       this.editedIndex = -1;
     },
     cancelChanges() {
-      this.itemDialog = false;
+      this.isDialogOpen = false;
       this.editedItem = JSON.parse(JSON.stringify(this.defaultItem));
       this.editedIndex = -1;
-    },
-    createItem() {
-      this.itemDialog = true;
     },
   },
 };
