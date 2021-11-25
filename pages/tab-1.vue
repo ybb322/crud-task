@@ -2,19 +2,17 @@
   <v-container class="wrapper">
     <v-row justify="center" align="center">
       <v-col cols="12" sm="12" md="12">
-        <h1 class="mb-5">
-          {{ usersTabTitle }}
-        </h1>
+        <h1 class="mb-5">Users</h1>
         <v-row justify="start" no-gutters>
           <v-col cols="4" sm="2" md="1">
-            <v-btn block class="blue-grey darken-2 mb-5" @click="createItem">
+            <v-btn block class="blue-grey darken-2 mb-5" @click="createItem()">
               New item
             </v-btn>
           </v-col>
         </v-row>
         <v-data-table
           :headers="headers"
-          :items="apiData"
+          :items="items"
           :items-per-page="-1"
           class="elevation-15"
         >
@@ -29,10 +27,17 @@
           </template>
         </v-data-table>
       </v-col>
-      <v-dialog v-model="itemDialog" width="400" class="item-dialog">
+      <v-dialog
+        @click:outside="cancelChanges"
+        v-model="itemDialog"
+        width="400"
+        class="item-dialog"
+      >
         <v-card max-width="400" class="edit-dialog-card dialog-card">
           <v-row justify="center">
-            <v-card-title class="mt-3">{{ itemDialogTitle }}</v-card-title>
+            <v-card-title class="mt-3">{{
+              this.editedIndex === -1 ? "New Item" : "Edit Item"
+            }}</v-card-title>
             <v-col cols="10">
               <v-text-field label="Name" v-model="editedItem.name" />
               <v-text-field v-model="editedItem.username" label="Username" />
@@ -42,8 +47,7 @@
                 v-model="editedItem.address.street"
                 label="Street"
               />
-              <v-text-field v-model="editedItem.address.suite"
-              label="Suite">
+              <v-text-field v-model="editedItem.address.suite" label="Suite">
               </v-text-field>
               <v-row justify="center" class="mb-3">
                 <v-col cols="12">
@@ -112,11 +116,8 @@ export default {
           value: "actions",
         },
       ],
-      usersTabTitle: "Users data",
-      id: null,
-      apiData: [],
+      items: [],
       editedIndex: -1,
-      newItemDialog: false,
       itemDialog: false,
       editedItem: {
         id: "",
@@ -153,24 +154,9 @@ export default {
       },
     };
   },
-  watch: {
-    itemDialog(val) {
-      val || this.cancelChanges();
-    },
-  },
-  computed: {
-    itemDialogTitle() {
-      if (this.editedIndex === -1) {
-        return (this.itemDialogTitle = "New Item");
-      } else {
-        return (this.itemDialogTitle = "Edit Item");
-      }
-      //  return this.editedIndex === -1 ? "New Item" : "Edit Item";
-    },
-  },
   async fetch() {
     // Getting data from remote server
-    this.apiData = await this.$api.users.find();
+    this.items = await this.$api.users.find();
   },
   methods: {
     async getOneItem(item) {
@@ -178,34 +164,34 @@ export default {
     },
     editItem(item) {
       // Editing data locally
-      this.editedIndex = this.apiData.indexOf(item);
+      this.editedIndex = this.items.indexOf(item);
       this.editedItem = JSON.parse(JSON.stringify(item));
       this.itemDialog = true;
     },
     async deleteItem(item) {
       // Deleting data on server
-      if (this.apiData.indexOf(item) > 9) {
-        item.id = this.apiData.indexOf(item) + 1;
+      if (this.items.indexOf(item) > 9) {
+        item.id = this.items.indexOf(item) + 1;
       }
       await this.$api.users.remove(item.id);
-      this.apiData.splice(this.apiData.indexOf(item), 1);
+      this.items.splice(this.items.indexOf(item), 1);
     },
     async saveChanges() {
       // Saving edited data locally
       if (this.editedIndex > -1) {
         Vue.set(
-          this.apiData,
+          this.items,
           this.editedIndex,
           JSON.parse(JSON.stringify(this.editedItem))
         );
-        let userId = this.apiData.indexOf(this.apiData[this.editedIndex + 1]);
-        let updatedItem = this.apiData[this.editedIndex];
+        let userId = this.items.indexOf(this.items[this.editedIndex + 1]);
+        let updatedItem = this.items[this.editedIndex];
         await this.$api.users.update(userId, updatedItem);
       } else {
         if (this.editedItem.id == "") {
-          this.editedItem.id = this.apiData.length + 1;
+          this.editedItem.id = this.items.length + 1;
         }
-        this.apiData.push(this.editedItem);
+        this.items.push(this.editedItem);
         let newItem = this.editedItem;
         await this.$api.users.create(newItem);
       }
@@ -218,22 +204,8 @@ export default {
       this.editedIndex = -1;
     },
     createItem() {
-      if (this.editedIndex == -1) {
-        this.itemDialogTitle = "New Item";
-      } else {
-        this.itemDialogTitle = "Edit Item";
-      }
       this.itemDialog = true;
     },
-    saveNewItem() {
-      this.apiData.push(this.newItem);
-      axios
-        .post("https://jsonplaceholder.typicode.com/users", this.newItem)
-        .then((response) => console.log(response));
-      this.newItemDialog = false;
-      this.newItem = { ...this.defaultItem };
-    },
-    fetchData() {},
   },
 };
 </script>
