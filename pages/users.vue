@@ -27,8 +27,7 @@
           </template>
         </v-data-table>
       </v-col>
-      <editModal />
-      <!--<v-dialog
+      <v-dialog
         @click:outside="cancelChanges"
         v-model="isDialogOpen"
         width="400"
@@ -71,7 +70,7 @@
             </v-col>
           </v-row>
         </v-card>
-      </v-dialog>-->
+      </v-dialog>
     </v-row>
   </v-container>
 </template>
