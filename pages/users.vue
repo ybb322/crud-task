@@ -115,6 +115,7 @@ export default {
       ],
       items: [],
       editedIndex: -1,
+      idCounter: 1000,
       isDialogOpen: false,
       editedItem: {},
       defaultItem: {
@@ -138,25 +139,20 @@ export default {
     this.editedItem = JSON.parse(JSON.stringify(this.defaultItem));
   },
   methods: {
-    //Getting one item from remote server
     async getOneItem(item) {
+      //Getting one item from remote server
       await this.$api.users.findOne(item.id);
     },
-    //Show modal window for New Item / Edit Item
     showDialog(item = null) {
+      //Show modal window for New Item / Edit Item
       this.editedIndex = this.items.indexOf(item);
-      //Check if item doesn't have any values
-      this.editedItem =
-        item == null
-          ? JSON.parse(JSON.stringify(this.defaultItem)) //If true == it's a new item == clear the inputs
-          : JSON.parse(JSON.stringify(item)); //If false == the item already exists == editing
+      //Check if item has any values
+      this.editedItem = item
+        ? JSON.parse(JSON.stringify(item)) //If true == the item already exists == editing
+        : JSON.parse(JSON.stringify(this.defaultItem)); //If false == it's a new item == clear the inputs
       this.isDialogOpen = true;
     },
     async deleteItem(item) {
-      //If it's a 'new' item (> 10th) == asign the a fake id for it
-      if (this.items.indexOf(item) > 9) {
-        item.id = this.items.indexOf(item) + 1;
-      }
       // Deleting the item on server, checking if it's deleted
       (await this.$api.users.remove(item.id)) == 200
         ? this.items.splice(this.items.indexOf(item), 1) // If true == delete it locally
@@ -164,29 +160,29 @@ export default {
     },
     async saveChanges() {
       // Saving edited data on server
-      let userId;
       // Check if the item already existed
       if (this.editedIndex > -1) {
-        //If true == Pass the index of the item as a parameter to store() in api.js
-        userId = this.items.indexOf(this.items[this.editedIndex + 1]);
-        //Updating the item on server, checking if it's updated
-        (await this.$api.users.store(userId, this.editedItem)) == 200
-          ? this.items.splice(
-              this.editedIndex,
-              1,
-              JSON.parse(JSON.stringify(this.editedItem)) // If true == update it locally
-            )
-          : console.log("There's some problem with editing on server!"); // If false == console.log the error message
+        //If true == Pass the index of the item +1 as a parameter to store() in api.js
+        let userId = this.items.indexOf(this.items[this.editedIndex + 1]);
+        //Updating the item on server
+        const response = await this.$api.users.store(userId, this.editedItem);
+        //Updating the response.data locally
+        this.items.splice(
+          this.editedIndex,
+          1,
+          JSON.parse(JSON.stringify(response))
+        );
       }
       //If the item didn't exist (=creating)
       else {
-        userId = null; //Passing null userId as a parameter to store() in api.js
-        //Creating the item on server, checking if it's created
-        (await this.$api.users.store(userId, this.editedItem)) == 201
-          ? this.items.push(this.editedItem) // If true == create it locally
-          : console.log(
-              "There's some problem with creating the item on server!"
-            ); // If false == console.log the error message
+        //Creating data on server
+        const response = await this.$api.users.store(userId, this.editedItem);
+        //Assigning unique fake id to the item
+        response.id = this.idCounter;
+        this.idCounter++;
+        console.log(response);
+        //Pushing the response.data locally
+        this.items.push(JSON.parse(JSON.stringify(response)));
       }
       this.isDialogOpen = false;
       this.editedIndex = -1;
