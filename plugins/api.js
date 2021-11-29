@@ -1,36 +1,24 @@
 export default ({ $axios }, inject) => {
   inject("api", {
     users: {
+      path: "https://jsonplaceholder.typicode.com/users",
       async find() {
-        const response = await $axios.get(
-          "https://jsonplaceholder.typicode.com/users"
-        );
+        const response = await $axios.get(this.path);
         return response.data;
       },
       async findOne(id) {
-        const response = await $axios.get(
-          `https://jsonplaceholder.typicode.com/users/${id}`
-        );
+        const response = await $axios.get(`${this.path}/${id}`);
         return response.data;
       },
       async remove(id) {
-        const response = await $axios.delete(
-          `https://jsonplaceholder.typicode.com/users/${id}`
-        );
+        const response = await $axios.delete(`${this.path}/${id}`);
         return response.status;
       },
       async store(id = null, data) {
-        const response =
-          id == null
-            ? await $axios.post(
-                `https://jsonplaceholder.typicode.com/users`,
-                data
-              )
-            : await $axios.patch(
-                `https://jsonplaceholder.typicode.com/users/${id}`,
-                data
-              );
-        return response.status;
+        const response = id
+          ? await $axios.patch(`${this.path}/${id}`, data)
+          : await $axios.post(`${this.path}`, data);
+        return response.data;
       },
     },
   });
