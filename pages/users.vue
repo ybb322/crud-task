@@ -76,9 +76,6 @@
 </template>
 
 <script>
-import axios from "axios";
-import Vue from "vue";
-
 export default {
   data() {
     return {
@@ -119,9 +116,7 @@ export default {
       items: [],
       editedIndex: -1,
       isDialogOpen: false,
-      editedItem: {
-        address: {},
-      },
+      editedItem: {},
       defaultItem: {
         id: "",
         name: "",
@@ -138,6 +133,9 @@ export default {
   async fetch() {
     // Getting data from remote server
     this.items = await this.$api.users.find();
+  },
+  created() {
+    this.editedItem = JSON.parse(JSON.stringify(this.defaultItem));
   },
   methods: {
     //Getting one item from remote server
