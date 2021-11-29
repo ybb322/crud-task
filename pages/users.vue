@@ -4,6 +4,7 @@
       <v-col cols="12" sm="12" md="12">
         <h1 class="mb-5">Users</h1>
         <v-row justify="start" no-gutters>
+          <Modal />
           <v-col cols="4" sm="2" md="1">
             <v-btn block class="blue-grey darken-2 mb-5" @click="showDialog()">
               New item
@@ -76,9 +77,6 @@
 </template>
 
 <script>
-import axios from "axios";
-import Vue from "vue";
-
 export default {
   data() {
     return {
@@ -119,9 +117,7 @@ export default {
       items: [],
       editedIndex: -1,
       isDialogOpen: false,
-      editedItem: {
-        address: {},
-      },
+      editedItem: {},
       defaultItem: {
         id: "",
         name: "",
@@ -138,6 +134,9 @@ export default {
   async fetch() {
     // Getting data from remote server
     this.items = await this.$api.users.find();
+  },
+  created() {
+    this.editedItem = JSON.parse(JSON.stringify(this.defaultItem));
   },
   methods: {
     //Getting one item from remote server
