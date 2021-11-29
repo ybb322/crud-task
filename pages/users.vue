@@ -159,11 +159,12 @@ export default {
         : console.log("There's some problem with deleting on server!"); // If false == console.log the error message
     },
     async saveChanges() {
+      let userId;
       // Saving edited data on server
       // Check if the item already existed
       if (this.editedIndex > -1) {
         //If true == Pass the index of the item +1 as a parameter to store() in api.js
-        let userId = this.items.indexOf(this.items[this.editedIndex + 1]);
+        userId = this.items.indexOf(this.items[this.editedIndex + 1]);
         //Updating the item on server
         const response = await this.$api.users.store(userId, this.editedItem);
         //Updating the response.data locally
@@ -180,7 +181,6 @@ export default {
         //Assigning unique fake id to the item
         response.id = this.idCounter;
         this.idCounter++;
-        console.log(response);
         //Pushing the response.data locally
         this.items.push(JSON.parse(JSON.stringify(response)));
       }
