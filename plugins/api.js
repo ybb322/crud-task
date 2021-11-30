@@ -14,7 +14,7 @@ export default ({ $axios }, inject) => {
         const response = await $axios.delete(`${this.path}/${id}`);
         return response.status;
       },
-      async store(id = null, data) {
+      async store(data, id = null) {
         const response = id
           ? await $axios.patch(`${this.path}/${id}`, data)
           : await $axios.post(`${this.path}`, data);
