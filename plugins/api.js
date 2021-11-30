@@ -28,6 +28,14 @@ export default ({ $axios }, inject) => {
         const response = await $axios.get(this.path);
         return response.data;
       },
+      async findOne(id) {
+        const response = await $axios.get(`${this.path}/${id}`);
+        return response.data;
+      },
+      async remove(id) {
+        const response = await $axios.delete(`${this.path}/${id}`);
+        return response.status;
+      },
     },
   });
 };
