@@ -70,7 +70,7 @@ export default {
     },
     async deleteItem(item) {
       (await this.$api.posts.remove(item.id)) == 200
-        ? this.item.splice()
+        ? this.items.splice(this.items.indexOf(item), 1)
         : console.log("error");
     },
     showDialog(item = null) {
