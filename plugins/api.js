@@ -21,5 +21,20 @@ export default ({ $axios }, inject) => {
         return response.data;
       },
     },
+    posts: {
+      path: "http://jsonplaceholder.typicode.com/posts",
+      async find() {
+        const response = await $axios.get(this.path);
+        return response.data;
+      },
+      async findOne(id) {
+        const response = await $axios.get(`${this.path}/${id}`);
+        return response.data;
+      },
+      async remove(id) {
+        const response = await $axios.delete(`${this.path}/${id}`);
+        return response.status;
+      },
+    },
   });
 };
