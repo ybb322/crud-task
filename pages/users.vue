@@ -36,7 +36,7 @@
         <v-card max-width="400" class="edit-dialog-card dialog-card">
           <v-row justify="center">
             <v-card-title class="mt-3">{{
-              this.editedIndex === -1 ? "New Item" : "Edit Item"
+              this.editedItem.id ? "Edit Item" : "New Item"
             }}</v-card-title>
             <v-col cols="10">
               <v-text-field v-model="editedItem.name" label="Name" />
@@ -114,7 +114,6 @@ export default {
         },
       ],
       items: [],
-      editedIndex: -1,
       idCounter: 1000,
       isDialogOpen: false,
       editedItem: {},
@@ -145,7 +144,6 @@ export default {
     },
     showDialog(item = null) {
       //Show modal window for New Item / Edit Item
-      this.editedIndex = this.items.indexOf(item);
       //Check if item has any values
       this.editedItem = item
         ? JSON.parse(JSON.stringify(item)) //If true == the item already exists == editing
@@ -159,17 +157,21 @@ export default {
         : console.log("There's some problem with deleting on server!"); // If false == console.log the error message
     },
     async saveChanges() {
-      let userId;
       // Saving edited data on server
       // Check if the item already existed
-      if (this.editedIndex > -1) {
+      if (this.editedItem.id) {
         //If true == Pass the index of the item +1 as a parameter to store() in api.js
-        userId = this.items.indexOf(this.items[this.editedIndex + 1]);
+        const editedItemIndex = this.items.findIndex(
+          (item) => item.id == this.editedItem.id
+        );
         //Updating the item on server
-        const response = await this.$api.users.store(userId, this.editedItem);
+        const response = await this.$api.users.store(
+          this.editedItem,
+          this.editedItem.id
+        );
         //Updating the response.data locally
         this.items.splice(
-          this.editedIndex,
+          editedItemIndex,
           1,
           JSON.parse(JSON.stringify(response))
         );
@@ -177,20 +179,17 @@ export default {
       //If the item didn't exist (=creating)
       else {
         //Creating data on server
-        const response = await this.$api.users.store(userId, this.editedItem);
+        const response = await this.$api.users.store(this.editedItem);
         //Assigning unique fake id to the item
-        response.id = this.idCounter;
-        this.idCounter++;
+        response.id = this.idCounter++;
         //Pushing the response.data locally
         this.items.push(JSON.parse(JSON.stringify(response)));
       }
       this.isDialogOpen = false;
-      this.editedIndex = -1;
     },
     cancelChanges() {
       this.isDialogOpen = false;
       this.editedItem = JSON.parse(JSON.stringify(this.defaultItem));
-      this.editedIndex = -1;
     },
   },
 };
