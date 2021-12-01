@@ -33,9 +33,9 @@
       v-model="isDialogOpen"
       @click:outside="cancelChanges()"
     >
-      <v-card max-width="400" class="pa-4">
+      <v-card max-width="400" class="pa-4" v-show="isEditActive">
         <h2 class="text-center mb-6">
-          {{ this.editedItem.title ? "Edit Item" : "New Item" }}
+          {{ this.editedItem.id ? "Edit Item" : "New Item" }}
         </h2>
         <v-textarea
           auto-grow
@@ -52,6 +52,10 @@
         <v-btn block class="mb-4" @click="saveChanges()">Save</v-btn>
         <v-btn block @click="cancelChanges()">Cancel</v-btn>
       </v-card>
+      <v-card v-show="!isEditActive">
+        <v-card-title>{{ editedItem.title }}</v-card-title>
+        <v-card-text>{{ editedItem.body }}</v-card-text>
+      </v-card>
     </v-dialog>
   </v-container>
 </template>
@@ -63,6 +67,7 @@ export default {
       items: [],
       idCounter: 1000,
       isDialogOpen: false,
+      isEditActive: false,
       editedItem: {},
       defaultItem: {
         id: "",
@@ -78,8 +83,20 @@ export default {
   },
   methods: {
     async getOneItem(item) {
-      //Getting one item from remote server
-      console.log(await this.$api.posts.findOne(item.id));
+      //Checking if the item actually exists on the server (there are 100 items initially)
+      if (item.id <= 100) {
+        //If true - get it.
+        const response = await this.$api.posts.findOne(item.id);
+        //Put its data into the modal
+        this.editedItem = JSON.parse(JSON.stringify(response.data));
+      } else {
+        //If false - clear the text
+        this.editedItem = JSON.parse(JSON.stringify(this.defaultItem));
+        // Show the error
+        this.editedItem.title = "This item doesn't exist on the server";
+      }
+      this.isEditActive = false;
+      this.isDialogOpen = true;
     },
     showDialog(item = null) {
       //Show modal window for New Item / Edit Item
@@ -89,6 +106,7 @@ export default {
       this.editedItem = item
         ? JSON.parse(JSON.stringify(item))
         : JSON.parse(JSON.stringify(this.defaultItem));
+      this.isEditActive = true;
       this.isDialogOpen = true;
     },
     async deleteItem(item) {
@@ -133,3 +151,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.active {
+  font-size: 24px;
+}
+</style>

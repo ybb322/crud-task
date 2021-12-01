@@ -29,7 +29,7 @@ export default ({ $axios }, inject) => {
       },
       async findOne(id) {
         const response = await $axios.get(`${this.path}/${id}`);
-        return response.data;
+        return response;
       },
       async remove(id) {
         const response = await $axios.delete(`${this.path}/${id}`);
