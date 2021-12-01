@@ -80,14 +80,16 @@ export default {
       fixed: false,
       items: [
         {
-          icon: "mdi-apps",
           title: "Index",
           to: "/",
         },
         {
-          icon: "mdi-chart-bubble",
           title: "Users",
           to: "/users",
+        },
+        {
+          title: "Posts",
+          to: "/posts",
         },
       ],
       miniVariant: false,
