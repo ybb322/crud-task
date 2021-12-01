@@ -151,9 +151,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.active {
-  font-size: 24px;
-}
-</style>
