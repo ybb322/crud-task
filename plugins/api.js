@@ -22,7 +22,7 @@ export default ({ $axios }, inject) => {
       },
     },
     posts: {
-      path: "http://jsonplaceholder.typicode.com/posts",
+      path: "https://jsonplaceholder.typicode.com/posts",
       async find() {
         const response = await $axios.get(this.path);
         return response.data;
