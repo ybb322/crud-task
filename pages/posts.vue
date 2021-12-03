@@ -13,7 +13,7 @@
               v-text="item.body"
             ></v-list-item-subtitle>
           </v-list-item-content>
-          <v-icon class="ma-2" small @click="getOneItem(item)">
+          <v-icon class="ma-2" small @click="getOneItem(item.id)">
             mdi-account
           </v-icon>
           <v-icon class="ma-2" small @click="showDialog(item)">
@@ -53,8 +53,8 @@
         <v-btn block @click="cancelChanges()">Cancel</v-btn>
       </v-card>
       <v-card v-show="!isEditActive">
-        <v-card-title>{{ editedItem.title }}</v-card-title>
-        <v-card-text>{{ editedItem.body }}</v-card-text>
+        <v-card-title>{{ item.title }}</v-card-title>
+        <v-card-text>{{ item.body }}</v-card-text>
       </v-card>
     </v-dialog>
   </v-container>
@@ -68,6 +68,12 @@ export default {
       idCounter: 1000,
       isDialogOpen: false,
       isEditActive: false,
+      item: {
+        id: "",
+        userId: "",
+        title: "",
+        body: "",
+      },
       editedItem: {},
       defaultItem: {
         id: "",
@@ -82,18 +88,18 @@ export default {
     this.items = await this.$api.posts.find();
   },
   methods: {
-    async getOneItem(item) {
+    async getOneItem(id) {
       //Checking if the item actually exists on the server (there are 100 items initially)
-      if (item.id <= 100) {
+      if (id <= 100) {
         //If true - get it.
-        const response = await this.$api.posts.findOne(item.id);
+        const response = await this.$api.posts.findOne(id);
         //Put its data into the modal
-        this.editedItem = JSON.parse(JSON.stringify(response.data));
+        this.item = JSON.parse(JSON.stringify(response));
       } else {
         //If false - clear the text
-        this.editedItem = JSON.parse(JSON.stringify(this.defaultItem));
+        this.item = JSON.parse(JSON.stringify(this.defaultItem));
         // Show the error
-        this.editedItem.title = "This item doesn't exist on the server";
+        this.item.title = "This item doesn't exist on the server";
       }
       this.isEditActive = false;
       this.isDialogOpen = true;
