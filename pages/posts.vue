@@ -1,7 +1,7 @@
 <template>
   <v-container class="wrapper">
     <h1>Posts</h1>
-    <v-btn class="mb-2 mt-4" @click="showDialog()">New Item</v-btn>
+    <v-btn class="mb-2 mt-4" @click="showEditDialog()">New Item</v-btn>
     <v-list three-line>
       <template v-for="(item, index) in items">
         <v-list-item :key="item.title">
@@ -16,7 +16,7 @@
           <v-icon class="ma-2" small @click="getOneItem(item.id)">
             mdi-account
           </v-icon>
-          <v-icon class="ma-2" small @click="showDialog(item)">
+          <v-icon class="ma-2" small @click="showEditDialog(item)">
             mdi-pencil
           </v-icon>
           <v-icon class="ma-2" small @click="deleteItem(item)">
@@ -30,10 +30,15 @@
 
     <PostsEditDialog
       :editedItem="editedItem"
-      :isDialogOpen="isDialogOpen"
+      :isEditDialogOpen="isEditDialogOpen"
       @inputUpdated="editedItem = JSON.parse(JSON.stringify($event))"
       @dialogClosed="cancelChanges()"
       @changesSaved="saveChanges()"
+    />
+    <PostsDetailsDialog
+      :item="item"
+      :isDetailsDialogOpen="isDetailsDialogOpen"
+      @dialogClosed="cancelChanges()"
     />
   </v-container>
 </template>
@@ -44,8 +49,8 @@ export default {
     return {
       items: [],
       idCounter: 1000,
-      isDialogOpen: false,
-      isEditActive: false,
+      isEditDialogOpen: false,
+      isDetailsDialogOpen: false,
       item: {
         id: "",
         userId: "",
@@ -84,10 +89,9 @@ export default {
         // Show the error
         this.item.title = "This item doesn't exist on the server";
       }
-      this.isEditActive = false;
-      this.isDialogOpen = true;
+      this.isDetailsDialogOpen = true;
     },
-    showDialog(item = null) {
+    showEditDialog(item = null) {
       //Show modal window for New Item / Edit Item
       //Check if item has any values
       //? the item already exists == editing
@@ -95,8 +99,7 @@ export default {
       this.editedItem = item
         ? JSON.parse(JSON.stringify(item))
         : JSON.parse(JSON.stringify(this.defaultItem));
-      this.isEditActive = true;
-      this.isDialogOpen = true;
+      this.isEditDialogOpen = true;
     },
     async deleteItem(item) {
       // Deleting the item on server, checking if it's deleted
@@ -131,10 +134,11 @@ export default {
         //Pushing the response.data locally
         this.items.push(response);
       }
-      this.isDialogOpen = false;
+      this.isEditDialogOpen = false;
     },
     cancelChanges() {
-      this.isDialogOpen = false;
+      this.isDetailsDialogOpen = false;
+      this.isEditDialogOpen = false;
       this.editedItem = JSON.parse(JSON.stringify(this.defaultItem));
     },
   },
