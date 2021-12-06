@@ -2,7 +2,7 @@
   <v-dialog
     width="400"
     v-model="isEditDialogOpen"
-    @click:outside="$emit('dialogClosed')"
+    @click:outside="closeDialog()"
   >
     <v-card max-width="400" class="pa-4">
       <h2 class="text-center mb-6">
@@ -22,7 +22,7 @@
         @input="updateInput('body', $event)"
         label="Body"
       ></v-textarea>
-      <v-btn block class="mb-4" @click="$emit('changesSaved')">Save</v-btn>
+      <v-btn block class="mb-4" @click="saveChanges()">Save</v-btn>
       <v-btn block @click="closeDialog()">Cancel</v-btn>
     </v-card>
   </v-dialog>
@@ -37,6 +37,9 @@ export default {
   methods: {
     updateInput(key, value) {
       this.$emit("inputUpdated", { ...this.editedItem, [key]: value });
+    },
+    saveChanges() {
+      this.$emit("changesSaved");
     },
     closeDialog() {
       this.$emit("dialogClosed");
