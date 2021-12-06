@@ -28,35 +28,13 @@
       </template>
     </v-list>
 
-    <v-dialog
-      width="400"
-      v-model="isDialogOpen"
-      @click:outside="cancelChanges()"
-    >
-      <v-card max-width="400" class="pa-4" v-show="isEditActive">
-        <h2 class="text-center mb-6">
-          {{ this.editedItem.id ? "Edit Item" : "New Item" }}
-        </h2>
-        <v-textarea
-          auto-grow
-          no-resize
-          v-model="editedItem.title"
-          label="Title"
-        ></v-textarea>
-        <v-textarea
-          auto-grow
-          no-resize
-          v-model="editedItem.body"
-          label="Body"
-        ></v-textarea>
-        <v-btn block class="mb-4" @click="saveChanges()">Save</v-btn>
-        <v-btn block @click="cancelChanges()">Cancel</v-btn>
-      </v-card>
-      <v-card v-show="!isEditActive">
-        <v-card-title>{{ item.title }}</v-card-title>
-        <v-card-text>{{ item.body }}</v-card-text>
-      </v-card>
-    </v-dialog>
+    <PostsEditDialog
+      :editedItem="editedItem"
+      :isDialogOpen="isDialogOpen"
+      @inputUpdated="editedItem = JSON.parse(JSON.stringify($event))"
+      @dialogClosed="cancelChanges()"
+      @changesSaved="saveChanges()"
+    />
   </v-container>
 </template>
 
@@ -74,7 +52,12 @@ export default {
         title: "",
         body: "",
       },
-      editedItem: {},
+      editedItem: {
+        id: "",
+        userId: "",
+        title: "",
+        body: "",
+      },
       defaultItem: {
         id: "",
         userId: "",
