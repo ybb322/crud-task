@@ -17,7 +17,7 @@
           class="elevation-15"
         >
           <template v-slot:[`item.actions`]="{ item }">
-            <v-icon small class="mr-2" @click="getOneItem(item)">
+            <v-icon small class="mr-2" @click="getOneItem(item.id)">
               mdi-account
             </v-icon>
             <v-icon small class="mr-2" @click="showDialog(item)">
@@ -138,9 +138,9 @@ export default {
     this.editedItem = JSON.parse(JSON.stringify(this.defaultItem));
   },
   methods: {
-    async getOneItem(item) {
+    async getOneItem(id) {
       //Getting one item from remote server
-      await this.$api.users.findOne(item.id);
+      await this.$api.users.findOne(id);
     },
     showDialog(item = null) {
       //Show modal window for New Item / Edit Item
