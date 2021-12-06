@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     width="400"
-    v-model="isDialogOpen"
+    v-model="isEditDialogOpen"
     @click:outside="$emit('dialogClosed')"
   >
     <v-card max-width="400" class="pa-4">
@@ -32,14 +32,10 @@
 export default {
   props: {
     editedItem: Object,
-    isDialogOpen: Boolean,
-  },
-  data() {
-    return {};
+    isEditDialogOpen: Boolean,
   },
   methods: {
     updateInput(key, value) {
-      console.log(key, value);
       this.$emit("inputUpdated", { ...this.editedItem, [key]: value });
     },
     closeDialog() {
