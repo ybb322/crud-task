@@ -13,7 +13,11 @@
               v-text="item.body"
             ></v-list-item-subtitle>
           </v-list-item-content>
-          <v-icon class="ma-2" small @click="getOneItem(item.id)">
+          <v-icon
+            class="ma-2"
+            small
+            @click="$refs.PostsDetailsDialog.open(item.id)"
+          >
             mdi-account
           </v-icon>
           <v-icon class="ma-2" small @click="showEditDialog(item)">
@@ -35,11 +39,7 @@
       @dialogClosed="cancelChanges()"
       @changesSaved="saveChanges()"
     />
-    <PostsDetailsDialog
-      :item="item"
-      :isDetailsDialogOpen="isDetailsDialogOpen"
-      @dialogClosed="cancelChanges()"
-    />
+    <PostsDetailsDialog ref="PostsDetailsDialog" />
   </v-container>
 </template>
 
@@ -50,7 +50,6 @@ export default {
       items: [],
       idCounter: 1000,
       isEditDialogOpen: false,
-      isDetailsDialogOpen: false,
       item: {},
       editedItem: {},
       defaultItem: {
@@ -66,21 +65,6 @@ export default {
     this.items = await this.$api.posts.find();
   },
   methods: {
-    async getOneItem(id) {
-      //Checking if the item actually exists on the server (there are 100 items initially)
-      if (id <= 100) {
-        //If true - get it.
-        const response = await this.$api.posts.findOne(id);
-        //Put its data into the modal
-        this.item = JSON.parse(JSON.stringify(response));
-      } else {
-        //If false - clear the text
-        this.item = JSON.parse(JSON.stringify(this.defaultItem));
-        // Show the error
-        this.item.title = "This item doesn't exist on the server";
-      }
-      this.isDetailsDialogOpen = true;
-    },
     showEditDialog(item = null) {
       //Show modal window for New Item / Edit Item
       //Check if item has any values
