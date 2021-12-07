@@ -2,9 +2,8 @@ export default class BaseCrud {
   constructor(axios, path) {
     this.axios = axios;
     this.path = path;
-    this.url = "https://jsonplaceholder.typicode.com";
   }
-
+  url = "https://jsonplaceholder.typicode.com";
   async find() {
     const response = await this.axios.get(`${this.url}${this.path}`);
     return response.data;

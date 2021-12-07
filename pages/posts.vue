@@ -51,18 +51,8 @@ export default {
       idCounter: 1000,
       isEditDialogOpen: false,
       isDetailsDialogOpen: false,
-      item: {
-        id: "",
-        userId: "",
-        title: "",
-        body: "",
-      },
-      editedItem: {
-        id: "",
-        userId: "",
-        title: "",
-        body: "",
-      },
+      item: {},
+      editedItem: {},
       defaultItem: {
         id: "",
         userId: "",
