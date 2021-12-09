@@ -29,7 +29,7 @@ export default {
         this.item = await this.$api.posts.findOne(id);
       } else {
         // Items with id > 100 don't actually exist on the server.
-        this.item = JSON.parse(JSON.stringify(this.defaultItem));
+        this.item = this.defaultItem;
         this.item.title = "This item doesn't exist on the server";
       }
       this.isDialogOpen = true;
