@@ -6,8 +6,8 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: "%s - task-08-11-2021",
-    title: "task-08-11-2021",
+    titleTemplate: "",
+    title: "CRUD-task",
     htmlAttrs: {
       lang: "en",
     },

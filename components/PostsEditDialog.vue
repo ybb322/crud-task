@@ -26,8 +26,8 @@
 export default {
   data() {
     return {
-      editedItem: {},
       isDialogOpen: false,
+      editedItem: {},
       defaultItem: {
         id: "",
         userId: "",
