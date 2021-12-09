@@ -43,7 +43,8 @@ export default {
         : JSON.parse(JSON.stringify(this.defaultItem));
       this.isDialogOpen = true;
     },
-    async saveChanges(item) {
+    async saveChanges() {
+      let item;
       if (this.editedItem.id) {
         item = await this.$api.posts.store(this.editedItem, this.editedItem.id);
       } else {
