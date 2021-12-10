@@ -1,31 +1,9 @@
-export const Mixins = {
+export const pagesMixins = {
   methods: {
-    async mixinFind() {
+    async find() {
       this.items = await this.$api[this.entity].find();
     },
-    async mixinFindOne(id) {
-      this.item = await this.$api[this.entity].findOne(id);
-    },
-    mixinOpen(item = null) {
-      this.editedItem = item
-        ? JSON.parse(JSON.stringify(item))
-        : JSON.parse(JSON.stringify(this.defaultItem));
-      this.isDialogOpen = true;
-    },
-    async mixinStoreChanges() {
-      let item;
-      if (this.editedItem.id) {
-        item = await this.$api[this.entity].store(
-          this.editedItem,
-          this.editedItem.id
-        );
-      } else {
-        item = await this.$api[this.entity].store(this.editedItem);
-      }
-      this.$emit("save", item);
-      this.close();
-    },
-    async mixinDeleteItem(item) {
+    async deleteItem(item) {
       //If local array has <100 items, the item.id will differ from the remote array.
       //Passing item as parameter to sync local & remote deleting.
       let deleteStatus = await this.$api[this.entity].remove(item.id);
@@ -33,7 +11,7 @@ export const Mixins = {
         ? this.items.splice(this.items.indexOf(item), 1)
         : alert("There's some problem with deleting on server!");
     },
-    mixinSaveChanges(item) {
+    saveChanges(item) {
       const editedItemIndex = this.items.findIndex(
         (currentItem) => currentItem.id === item.id
       );

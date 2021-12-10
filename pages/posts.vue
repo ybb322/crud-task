@@ -6,7 +6,7 @@
     >
     <v-list three-line>
       <template v-for="item in items">
-        <v-list-item :key="'A' + item.id">
+        <v-list-item :key="item.id">
           <v-list-item-content class="pr-10">
             <v-list-item-title v-text="item.title"></v-list-item-title>
             <v-list-item-subtitle
@@ -29,18 +29,18 @@
           </v-icon>
           <h5 class="ml-6 text--disabled" v-text="item.id"></h5>
         </v-list-item>
-        <v-divider :key="'B' + item.id"></v-divider>
+        <v-divider :key="'t' + item.id"></v-divider>
       </template>
     </v-list>
-    <PostsEditDialog ref="PostsEditDialog" @save="saveChanges" />
+    <PostsEditDialog ref="PostsEditDialog" @save="save" />
     <PostsDetailsDialog ref="PostsDetailsDialog" />
   </v-container>
 </template>
 
 <script>
-import { Mixins } from "~/mixins/mixins";
+import { pagesMixins } from "~/mixins/pagesMixins";
 export default {
-  mixins: [Mixins],
+  mixins: [pagesMixins],
   data() {
     return {
       items: [],
@@ -48,14 +48,11 @@ export default {
     };
   },
   async fetch() {
-    await this.mixinFind();
+    await this.find();
   },
   methods: {
-    async deleteItem(item) {
-      await this.mixinDeleteItem(item);
-    },
-    saveChanges(item) {
-      this.mixinSaveChanges(item);
+    save(item) {
+      this.saveChanges(item);
     },
   },
 };
