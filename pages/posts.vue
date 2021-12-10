@@ -32,8 +32,7 @@
         <v-divider v-if="index < items.length - 1" :key="index"></v-divider>
       </template>
     </v-list>
-
-    <PostsEditDialog ref="PostsEditDialog" @save="renderChanges" />
+    <PostsEditDialog ref="PostsEditDialog" @save="saveChanges" />
     <PostsDetailsDialog ref="PostsDetailsDialog" />
   </v-container>
 </template>
@@ -43,8 +42,6 @@ export default {
   data() {
     return {
       items: [],
-      idCounter: 1000,
-      item: {},
       defaultItem: {
         id: "",
         userId: "",
@@ -58,19 +55,23 @@ export default {
   },
   methods: {
     async deleteItem(item) {
-      (await this.$api.posts.remove(item.id)) == 200
+      //If local array has <100 items, the item.id will differ from the remote array.
+      //Passing item as parameter to sync local & remote deleting.
+      let deleteStatus = await this.$api.posts.remove(item.id);
+      deleteStatus === 200
         ? this.items.splice(this.items.indexOf(item), 1)
         : alert("There's some problem with deleting on server!");
     },
-    async renderChanges(item) {
-      if (item.id != 101) {
-        const editedItemIndex = this.items.findIndex(
-          (currentItem) => currentItem.id == item.id
-        );
-        this.items.splice(editedItemIndex, 1, item);
-      } else {
-        item.id = this.idCounter++;
+    saveChanges(item) {
+      const editedItemIndex = this.items.findIndex(
+        (currentItem) => currentItem.id === item.id
+      );
+      if (editedItemIndex === -1) {
+        // New item always has id === 101 i.e. it never exists in the local array initially.
+        // Next new item always overwrites the old one.
         this.items.push(item);
+      } else {
+        this.items.splice(editedItemIndex, 1, item);
       }
     },
   },

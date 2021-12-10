@@ -1,4 +1,4 @@
-import BaseCrud from "~/services/basecrud";
+import BaseCrud from "~/utils/basecrud";
 export default ({ $axios }, inject) => {
   inject("api", {
     users: new BaseCrud($axios, "/users"),
