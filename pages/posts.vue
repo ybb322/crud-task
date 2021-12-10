@@ -6,7 +6,7 @@
     >
     <v-list three-line>
       <template v-for="(item, index) in items">
-        <v-list-item :key="item.title">
+        <v-list-item :key="item.id">
           <v-list-item-content class="pr-10">
             <v-list-item-title v-text="item.title"></v-list-item-title>
             <v-list-item-subtitle
@@ -29,7 +29,7 @@
           </v-icon>
           <h5 class="ml-6 text--disabled" v-text="item.id"></h5>
         </v-list-item>
-        <v-divider v-if="index < items.length - 1" :key="index"></v-divider>
+        <v-divider v-if="index < items.length - 1" :key="item.id"></v-divider>
       </template>
     </v-list>
     <PostsEditDialog ref="PostsEditDialog" @save="saveChanges" />

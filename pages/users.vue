@@ -84,17 +84,6 @@ export default {
         },
       ],
       items: [],
-      defaultItem: {
-        id: "",
-        name: "",
-        username: "",
-        email: "",
-        address: {
-          city: "",
-          street: "",
-          suite: "",
-        },
-      },
     };
   },
   async fetch() {
