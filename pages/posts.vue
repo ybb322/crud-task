@@ -32,7 +32,7 @@
         <v-divider :key="'t' + item.id"></v-divider>
       </template>
     </v-list>
-    <PostsEditDialog ref="PostsEditDialog" @save="save" />
+    <PostsEditDialog ref="PostsEditDialog" @save="saveChanges" />
     <PostsDetailsDialog ref="PostsDetailsDialog" />
   </v-container>
 </template>
@@ -49,11 +49,6 @@ export default {
   },
   async fetch() {
     await this.find();
-  },
-  methods: {
-    save(item) {
-      this.saveChanges(item);
-    },
   },
 };
 </script>

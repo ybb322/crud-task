@@ -22,5 +22,8 @@ export const dialogsMixins = {
       this.$emit("save", item);
       this.close();
     },
+    close() {
+      this.isDialogOpen = false;
+    },
   },
 };

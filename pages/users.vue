@@ -39,7 +39,7 @@
           </template>
         </v-data-table>
       </v-col>
-      <UsersEditDialog ref="UsersEditDialog" @save="save" />
+      <UsersEditDialog ref="UsersEditDialog" @save="saveChanges" />
       <UsersDetailsDialog ref="UsersDetailsDialog" />
     </v-row>
   </v-container>
@@ -91,11 +91,6 @@ export default {
   },
   async fetch() {
     await this.find();
-  },
-  methods: {
-    save(item) {
-      this.saveChanges(item);
-    },
   },
 };
 </script>
