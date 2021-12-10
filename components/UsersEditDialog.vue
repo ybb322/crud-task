@@ -43,9 +43,12 @@
 </template>
 
 <script>
+import { Mixins } from "~/mixins/mixins";
 export default {
+  mixins: [Mixins],
   data() {
     return {
+      entity: "users",
       isDialogOpen: false,
       editedItem: {},
       defaultItem: {
@@ -66,20 +69,10 @@ export default {
   },
   methods: {
     open(item = null) {
-      this.editedItem = item
-        ? JSON.parse(JSON.stringify(item))
-        : JSON.parse(JSON.stringify(this.defaultItem));
-      this.isDialogOpen = true;
+      this.mixinOpen(item);
     },
     async saveChanges() {
-      let item;
-      if (this.editedItem.id) {
-        item = await this.$api.posts.store(this.editedItem, this.editedItem.id);
-      } else {
-        item = await this.$api.posts.store(this.editedItem);
-      }
-      this.$emit("save", item);
-      this.close();
+      await this.mixinStoreChanges();
     },
     close() {
       this.isDialogOpen = false;
