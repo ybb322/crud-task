@@ -5,7 +5,7 @@
     class="item-dialog"
     @click:outside="close()"
   >
-    <v-card max-width="400" class="edit-dialog-card dialog-card">
+    <v-card max-width="400" class="dialog-card">
       <v-row justify="center">
         <v-card-title class="mt-3">{{
           this.editedItem.id ? "Edit Item" : "New Item"
