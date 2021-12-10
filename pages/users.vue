@@ -39,16 +39,16 @@
           </template>
         </v-data-table>
       </v-col>
-      <UsersEditDialog ref="UsersEditDialog" @save="saveChanges" />
+      <UsersEditDialog ref="UsersEditDialog" @save="save" />
       <UsersDetailsDialog ref="UsersDetailsDialog" />
     </v-row>
   </v-container>
 </template>
 
 <script>
-import { Mixins } from "~/mixins/mixins";
+import { pagesMixins } from "~/mixins/pagesMixins";
 export default {
-  mixins: [Mixins],
+  mixins: [pagesMixins],
   data() {
     return {
       headers: [
@@ -90,14 +90,11 @@ export default {
     };
   },
   async fetch() {
-    await this.mixinFind();
+    await this.find();
   },
   methods: {
-    async deleteItem(item) {
-      await this.mixinDeleteItem(item);
-    },
-    saveChanges(item) {
-      this.mixinSaveChanges(item);
+    save(item) {
+      this.saveChanges(item);
     },
   },
 };

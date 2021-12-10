@@ -23,9 +23,9 @@
 </template>
 
 <script>
-import { Mixins } from "~/mixins/mixins";
+import { dialogsMixins } from "~/mixins/dialogsMixins";
 export default {
-  mixins: [Mixins],
+  mixins: [dialogsMixins],
   data() {
     return {
       entity: "posts",
@@ -40,12 +40,6 @@ export default {
     };
   },
   methods: {
-    open(item = null) {
-      this.mixinOpen(item);
-    },
-    async saveChanges() {
-      await this.mixinStoreChanges();
-    },
     close() {
       this.isDialogOpen = false;
     },
