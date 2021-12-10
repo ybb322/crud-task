@@ -13,9 +13,9 @@
 </template>
 
 <script>
-import { Mixins } from "~/mixins/mixins";
+import { dialogsMixins } from "~/mixins/dialogsMixins";
 export default {
-  mixins: [Mixins],
+  mixins: [dialogsMixins],
   data() {
     return {
       entity: "posts",
@@ -33,7 +33,7 @@ export default {
     async open(id) {
       if (id <= 100) {
         // Items with id < 100 are actual items, that exist on the server.
-        await this.mixinFindOne(id);
+        await this.findOne(id);
       } else {
         // Items with id > 100 don't actually exist on the server.
         // Clear the object properties > Display v-card with an error.
