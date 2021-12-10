@@ -54,9 +54,6 @@ export default {
       }
       this.isDialogOpen = true;
     },
-    close() {
-      this.isDialogOpen = false;
-    },
   },
 };
 </script>
