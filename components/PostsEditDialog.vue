@@ -39,10 +39,5 @@ export default {
       },
     };
   },
-  methods: {
-    close() {
-      this.isDialogOpen = false;
-    },
-  },
 };
 </script>

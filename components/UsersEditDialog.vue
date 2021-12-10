@@ -67,11 +67,6 @@ export default {
   created() {
     this.editedItem = JSON.parse(JSON.stringify(this.defaultItem));
   },
-  methods: {
-    close() {
-      this.isDialogOpen = false;
-    },
-  },
 };
 </script>
 
