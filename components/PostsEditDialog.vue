@@ -28,6 +28,7 @@ export default {
   mixins: [Mixins],
   data() {
     return {
+      entity: "posts",
       isDialogOpen: false,
       editedItem: {},
       defaultItem: {
